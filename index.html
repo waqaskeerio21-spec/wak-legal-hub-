@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAK Legal Hub - Enterprise Chambers Portal</title>
+  <style>
+    :root {
+      --bg: #0c0c0e;
+      --card: #16161a;
+      --card-2: #1e1e24;
+      --text: #f5f3ee;
+      --muted: #a6a298;
+      --gold: #d4af37;
+      --gold-soft: rgba(212, 175, 55, 0.14);
+      --border: rgba(212, 175, 55, 0.25);
+      --danger: #e55353;
+      --ok: #2ea043;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: radial-gradient(circle at top, #1b1811 0%, var(--bg) 55%); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .container { width: 100%; max-width: 1020px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55); }
+    .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 44px; height: 44px; border-radius: 10px; background: var(--gold-soft); border: 1px solid var(--gold); color: var(--gold); display: grid; place-items: center; font-weight: 800; }
+    .title { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .subtitle { font-size: 0.85rem; color: var(--muted); }
+    .badge { padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; border: 1px solid var(--border); background: var(--card-2); color: var(--gold); }
+    
+    .auth-box { max-width: 430px; margin: 12px auto; background: var(--card-2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-weight: 600; }
+    .tab-btn.active { background: var(--gold); color: #111; border-color: var(--gold); }
+
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.14); background: #101014; color: var(--text); font-size: 0.95rem; outline: none; }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+    
+    .btn { width: 100%; padding: 12px 16px; border-radius: 8px; border: none; background: var(--gold); color: #111; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-secondary { width: auto; padding: 8px 14px; background: var(--card-2); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+    .btn-ok { width: auto; padding: 6px 12px; background: var(--ok); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    .status { margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: 0.88rem; display: none; line-height: 1.45; word-break: break-word; }
+    .status.show { display: block; }
+    .status.error { background: rgba(229, 83, 83, 0.14); border: 1px solid rgba(229, 83, 83, 0.45); color: #ff9b9b; }
+    .status.ok { background: rgba(46, 160, 67, 0.15); border: 1px solid rgba(46, 160, 67, 0.45); color: #8ce99a; }
+    .hidden { display: none !important; }
+
+    .dashboard-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .role-badge { display: inline-block; font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; margin-left: 8px; }
+    .role-badge.admin { background: var(--gold); color: #111; }
+    .role-badge.user { background: rgba(255, 255, 255, 0.12); color: var(--text); }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+    .panel { background: var(--card-2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+    .panel h3 { color: var(--gold); margin-bottom: 12px; font-size: 1rem; }
+
+    .record-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; max-height: 320px; overflow-y: auto; }
+    .record-item { padding: 12px; border-radius: 8px; background: #111115; border: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; }
+    .record-title { font-weight: 700; margin-bottom: 4px; }
+    .record-meta { font-size: 0.8rem; color: var(--muted); }
+    .admin-notice { background: var(--gold-soft); border: 1px solid var(--gold); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; color: var(--gold); margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <div class="logo">WAK</div>
+        <div>
+          <div class="title">WAK Legal Hub</div>
+          <div class="subtitle">Chambers & Access Management Workspace</div>
+        </div>
+      </div>
+      <div id="connectionBadge" class="badge">Connecting...</div>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <section id="authSection" class="auth-box">
+      <div class="tabs">
+        <button id="loginTab" type="button" class="tab-btn active">Sign In</button>
+        <button id="signupTab" type="button" class="tab-btn">Register Request</button>
+      </div>
+
+      <form id="authForm" novalidate>
+        <div id="nameField" class="field hidden">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" type="text" placeholder="Enter your full name" autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input id="email" type="email" placeholder="waqaskeerio21@gmail.com" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Minimum 6 characters" autocomplete="current-password" required />
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn">Sign In to Portal</button>
+        <div id="authStatus" class="status"></div>
+      </form>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboardSection" class="hidden">
+      <div class="dashboard-top">
+        <div>
+          <h2 id="welcomeText">Welcome</h2>
+          <div id="userEmailText" class="subtitle"></div>
+        </div>
+        <button id="logoutBtn" type="button" class="btn btn-secondary">Logout</button>
+      </div>
+
+      <div id="adminNotice" class="admin-notice hidden">
+        <strong>👑 Admin Control Active:</strong> You have master access to manage user approvals and full chambers database records.
+      </div>
+
+      <!-- ADMIN ONLY: USER MANAGEMENT & PENDING APPROVALS -->
+      <div id="adminUserManagement" class="panel hidden">
+        <h3>👑 Admin Control Panel: User Access & Approvals</h3>
+        <div class="grid">
+          <!-- AUTHORIZE USER -->
+          <div>
+            <h4 style="color:var(--muted); font-size:0.88rem; margin-bottom:8px;">Pre-Authorize Member Email</h4>
+            <form id="createUserForm">
+              <div class="field">
+                <input id="newUserName" type="text" placeholder="User Full Name" required />
+              </div>
+              <div class="field">
+                <input id="newUserEmail" type="email" placeholder="user@example.com" required />
+              </div>
+              <button type="submit" id="createUserBtn" class="btn btn-secondary" style="width:100%;">Authorize Member Email</button>
+            </form>
+            <div id="adminUserStatus" class="status"></div>
+          </div>
+
+          <!-- PENDING SIGNUP APPROVALS -->
+          <div>
+            <h4 style="color:var(--muted); font-size:0.88rem; margin-bottom:8px;">Pending Approval Requests</h4>
+            <div id="pendingUsersList" class="record-list">
+              <div class="record-meta">No pending user requests.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN WORKSPACE DATABASE -->
+      <div class="grid">
+        <div class="panel">
+          <h3>Add New Case / Contract</h3>
+          <form id="recordForm">
+            <div class="field">
+              <label for="caseTitle">Case or Contract Title</label>
+              <input id="caseTitle" type="text" placeholder="e.g. Service Agreement / High Court Petition" required />
+            </div>
+            <div class="field">
+              <label for="caseStatus">Status</label>
+              <select id="caseStatus">
+                <option value="Active">Active</option>
+                <option value="Pending Hearing">Pending Hearing</option>
+                <option value="Drafting">Drafting</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="caseNotes">Notes & Case Details</label>
+              <textarea id="caseNotes" rows="3" placeholder="Key hearing dates, court details, or legal notes..."></textarea>
+            </div>
+            <button id="saveRecordBtn" type="submit" class="btn">Save Record</button>
+            <div id="dbStatus" class="status"></div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h3 id="recordsHeading">Chambers Database Records</h3>
+          <div id="recordsList" class="record-list">
+            <div class="record-meta">Loading database records...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAnalytics, logEvent, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      doc,
+      setDoc,
+      getDoc,
+      updateDoc,
+      query,
+      where,
+      getDocs,
+      serverTimestamp,
+      enableIndexedDbPersistence
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const ADMIN_EMAIL = "waqaskeerio21@gmail.com";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQTIX297OTton1OY3Uh13WejRqFPeLggw",
+      authDomain: "wak-legal-hub.firebaseapp.com",
+      projectId: "wak-legal-hub",
+      storageBucket: "wak-legal-hub.firebasestorage.app",
+      messagingSenderId: "98950465383",
+      appId: "1:98950465383:web:034ae9a0168a41a93b11c2",
+      measurementId: "G-6F3BEKX01G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let analytics = null;
+
+    enableIndexedDbPersistence(db).catch(() => {});
+
+    isAnalyticsSupported()
+      .then((supported) => {
+        if (supported) {
+          analytics = getAnalytics(app);
+          logEvent(analytics, "app_initialized");
+        }
+      })
+      .catch(() => {});
+
+    function trackCloudLog(eventName, eventParams = {}) {
+      if (analytics) {
+        try {
+          logEvent(analytics, eventName, eventParams);
+        } catch {}
+      }
+    }
+
+    const authSection = document.getElementById("authSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const nameField = document.getElementById("nameField");
+    const authForm = document.getElementById("authForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authStatus = document.getElementById("authStatus");
+    const dbStatus = document.getElementById("dbStatus");
+    const adminUserStatus = document.getElementById("adminUserStatus");
+    const connectionBadge = document.getElementById("connectionBadge");
+    const welcomeText = document.getElementById("welcomeText");
+    const userEmailText = document.getElementById("userEmailText");
+    const recordForm = document.getElementById("recordForm");
+    const saveRecordBtn = document.getElementById("saveRecordBtn");
+    const recordsList = document.getElementById("recordsList");
+    const adminNotice = document.getElementById("adminNotice");
+    const adminUserManagement = document.getElementById("adminUserManagement");
+    const pendingUsersList = document.getElementById("pendingUsersList");
+    const createUserForm = document.getElementById("createUserForm");
+    const recordsHeading = document.getElementById("recordsHeading");
+
+    let mode = "login";
+    let isAuthBusy = false;
+    let currentSessionUser = null;
+
+    function showStatus(el, message, type = "ok") {
+      el.textContent = message;
+      el.className = `status show ${type}`;
+    }
+
+    function clearStatus(el) {
+      el.textContent = "";
+      el.className = "status";
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      clearStatus(authStatus);
+      if (mode === "login") {
+        loginTab.classList.add("active");
+        signupTab.classList.remove("active");
+        nameField.classList.add("hidden");
+        submitBtn.textContent = "Sign In to Portal";
+      } else {
+        signupTab.classList.add("active");
+        loginTab.classList.remove("active");
+        nameField.classList.remove("hidden");
+        submitBtn.textContent = "Submit Registration Request";
+      }
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    signupTab.addEventListener("click", () => setMode("signup"));
+
+    function escapeHtml(str = "") {
+      return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    async function loadPendingUsers() {
+      try {
+        const q = query(collection(db, "users"), where("status", "==", "pending"));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          pendingUsersList.innerHTML = `<div class="record-meta">No pending approval requests.</div>`;
+          return;
+        }
+
+        pendingUsersList.innerHTML = snap.docs.map(d => {
+          const u = d.data();
+          return `
+            <div class="record-item">
+              <div>
+                <div class="record-title">${escapeHtml(u.name || "User")}</div>
+                <div class="record-meta">${escapeHtml(u.email)}</div>
+              </div>
+              <button class="btn-ok" onclick="window.approveUser('${d.id}')">Approve</button>
+            </div>
+          `;
+        }).join("");
+      } catch (err) {
+        pendingUsersList.innerHTML = `<div class="record-meta">Error loading requests.</div>`;
+      }
+    }
+
+    window.approveUser = async function(uid) {
+      try {
+        await updateDoc(doc(db, "users", uid), { status: "approved" });
+        loadPendingUsers();
+      } catch (e) {
+        alert("Could not approve user: " + e.message);
+      }
+    };
+
+    async function loadRecords(user, isAdmin) {
+      try {
+        let q = isAdmin 
+          ? query(collection(db, "records"))
+          : query(collection(db, "records"), where("uid", "==", user.uid));
+
+        const snap = await getDocs(q);
+        const items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (items.length === 0) {
+          recordsList.innerHTML = `<div class="record-meta">No records found yet.</div>`;
+          return;
+        }
+
+        recordsList.innerHTML = items.map(item => `
+          <div class="record-item">
+            <div>
+              <div class="record-title">${escapeHtml(item.title)}</div>
+              <div class="record-meta">Status: ${escapeHtml(item.status)} ${isAdmin && item.userEmail ? `| User: ${escapeHtml(item.userEmail)}` : ''}</div>
+              ${item.notes ? `<div class="record-meta" style="margin-top:4px;">${escapeHtml(item.notes)}</div>` : ""}
+            </div>
+          </div>
+        `).join("");
+      } catch (err) {
+        recordsList.innerHTML = `<div class="record-meta">Error loading records.</div>`;
+      }
+    }
+
+    async function checkUserAccessAndRender(user) {
+      currentSessionUser = user;
+      const isAdmin = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+      if (!isAdmin) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data();
+
+        if (!userData || userData.status !== "approved") {
+          await signOut(auth);
+          showStatus(authStatus, "Your account is pending admin approval. Please contact Waqas Ahmed Keerio.", "error");
+          authSection.classList.remove("hidden");
+          dashboardSection.classList.add("hidden");
+          return;
+        }
+      }
+
+      authSection.classList.add("hidden");
+      dashboardSection.classList.remove("hidden");
+
+      welcomeText.innerHTML = `Welcome, ${escapeHtml(user.displayName || user.email)} <span class="role-badge ${isAdmin ? 'admin' : 'user'}">${isAdmin ? 'ADMIN ACCESS' : 'MEMBER'}</span>`;
+      userEmailText.textContent = user.email || "";
+
+      if (isAdmin) {
+        adminNotice.classList.remove("hidden");
+        adminUserManagement.classList.remove("hidden");
+        recordsHeading.textContent = "Chambers Master Database (All Records)";
+        loadPendingUsers();
+      } else {
+        adminNotice.classList.add("hidden");
+        adminUserManagement.classList.add("hidden");
+        recordsHeading.textContent = "My Saved Records";
+      }
+
+      loadRecords(user, isAdmin);
+    }
+
+    async function initApp() {
+      connectionBadge.textContent = "Firebase Ready";
+      await setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          checkUserAccessAndRender(user);
+        } else {
+          dashboardSection.classList.add("hidden");
+          authSection.classList.remove("hidden");
+        }
+      });
+    }
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isAuthBusy) return;
+
+      clearStatus(authStatus);
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const fullName = document.getElementById("fullName").value.trim();
+
+      isAuthBusy = true;
+      submitBtn.disabled = true;
+
+      try {
+        if (mode === "login") {
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          await checkUserAccessAndRender(cred.user);
+        } else {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          if (fullName) await updateProfile(cred.user, { displayName: fullName });
+
+          const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+          await setDoc(doc(db, "users", cred.user.uid), {
+            name: fullName || "User",
+            email: email,
+            status: isAdmin ? "approved" : "pending",
+            createdAt: serverTimestamp()
+          });
+
+          if (!isAdmin) {
+            await signOut(auth);
+            showStatus(authStatus, "Registration request submitted successfully! Pending Admin approval.", "ok");
+          }
+        }
+      } catch (err) {
+        showStatus(authStatus, err.message || "Authentication error.", "error");
+      } finally {
+        isAuthBusy = false;
+        submitBtn.disabled = false;
+      }
+    });
+
+    createUserForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearStatus(adminUserStatus);
+      const name = document.getElementById("newUserName").value.trim();
+      const email = document.getElementById("newUserEmail").value.trim();
+
+      if (!name || !email) return;
+
+      try {
+        const docRef = doc(collection(db, "authorized_members"), email.toLowerCase());
+        await setDoc(docRef, {
+          name: name,
+          email: email.toLowerCase(),
+          authorizedBy: ADMIN_EMAIL,
+          createdAt: serverTimestamp()
+        });
+
+        createUserForm.reset();
+        showStatus(adminUserStatus, `Authorized email '${email}' pre-approved successfully!`, "ok");
+      } catch (err) {
+        showStatus(adminUserStatus, err.message || "Failed to authorize email.", "error");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => signOut(auth));
+
+    recordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSessionUser) return;
+
+      clearStatus(dbStatus);
+      const title = document.getElementById("caseTitle").value.trim();
+      const status = document.getElementById("caseStatus").value;
+      const notes = document.getElementById("caseNotes").value.trim();
+
+      try {
+        await addDoc(collection(db, "records"), {
+          uid: currentSessionUser.uid,
+          userEmail: currentSessionUser.email,
+          title,
+          status,
+          notes,
+          createdAt: serverTimestamp()
+        });
+        recordForm.reset();
+        const isAdmin = currentSessionUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+        loadRecords(currentSessionUser, isAdmin);
+        showStatus(dbStatus, "Saved to database successfully.", "ok");
+      } catch (err) {
+        showStatus(dbStatus, err.message, "error");
+      }
+    });
+
+    initApp();
+  </script>
+</body>
+</html>
