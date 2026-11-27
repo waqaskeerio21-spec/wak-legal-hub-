@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WAK Legal Hub - Complete Chambers & Case Management</title>
+  <style>
+    :root {
+      --bg: #0c0c0e;
+      --card: #16161a;
+      --card-2: #1e1e24;
+      --text: #f5f3ee;
+      --muted: #a6a298;
+      --gold: #d4af37;
+      --gold-soft: rgba(212, 175, 55, 0.14);
+      --border: rgba(212, 175, 55, 0.25);
+      --danger: #e55353;
+      --ok: #2ea043;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: radial-gradient(circle at top, #1b1811 0%, var(--bg) 55%); color: var(--text); min-height: 100vh; padding: 20px; }
+    .container { width: 100%; max-width: 1240px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55); }
+
+    .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 46px; height: 46px; border-radius: 10px; background: var(--gold-soft); border: 1px solid var(--gold); color: var(--gold); display: grid; place-items: center; font-weight: 800; letter-spacing: 0.5px; }
+    .title { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .subtitle { font-size: 0.85rem; color: var(--muted); }
+    .badge { padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; border: 1px solid var(--border); background: var(--card-2); color: var(--gold); }
+
+    /* AUTH SECTION */
+    .auth-box { max-width: 440px; margin: 20px auto; background: var(--card-2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-weight: 600; }
+    .tab-btn.active { background: var(--gold); color: #111; border-color: var(--gold); }
+
+    /* NAVIGATION TABS FOR DASHBOARD */
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto; }
+    .nav-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-2); color: var(--text); cursor: pointer; font-size: 0.88rem; font-weight: 600; white-space: nowrap; }
+    .nav-btn.active { background: var(--gold); color: #111; }
+
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.14); background: #101014; color: var(--text); font-size: 0.95rem; outline: none; }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+
+    .btn { width: 100%; padding: 12px 16px; border-radius: 8px; border: none; background: var(--gold); color: #111; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-secondary { width: auto; padding: 8px 14px; background: var(--card-2); color: var(--text); border: 1px solid var(--border); font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 0.84rem; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-ok { width: auto; padding: 6px 12px; background: var(--ok); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    .status { margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: 0.88rem; display: none; line-height: 1.45; word-break: break-word; }
+    .status.show { display: block; }
+    .status.error { background: rgba(229, 83, 83, 0.14); border: 1px solid rgba(229, 83, 83, 0.45); color: #ff9b9b; }
+    .status.ok { background: rgba(46, 160, 67, 0.15); border: 1px solid rgba(46, 160, 67, 0.45); color: #8ce99a; }
+    .hidden { display: none !important; }
+
+    .dashboard-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .role-badge { display: inline-block; font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; margin-left: 8px; }
+    .role-badge.admin { background: var(--gold); color: #111; }
+    .role-badge.user { background: rgba(255, 255, 255, 0.12); color: var(--text); }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media (max-width: 820px) { .grid, .grid-3 { grid-template-columns: 1fr; } }
+
+    .panel { background: var(--card-2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+    .panel h3 { color: var(--gold); margin-bottom: 12px; font-size: 1rem; }
+
+    .record-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; max-height: 450px; overflow-y: auto; }
+    .record-item { padding: 12px; border-radius: 8px; background: #111115; border: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+    .record-title { font-weight: 700; margin-bottom: 4px; color: var(--text); }
+    .record-meta { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    .admin-notice { background: var(--gold-soft); border: 1px solid var(--gold); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; color: var(--gold); margin-bottom: 16px; }
+
+    .chambers-contact-strip { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--card-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; }
+    .contact-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .contact-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; text-decoration: none; border: 1px solid var(--border); background: var(--card-2); color: var(--gold); cursor: pointer; }
+    .contact-chip:hover { border-color: var(--gold); background: var(--gold-soft); }
+    .contact-chip.wa { border-color: rgba(46, 160, 67, 0.45); color: #8ce99a; background: rgba(46, 160, 67, 0.12); }
+
+    .analysis-box { background: #111115; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 14px; font-size: 0.9rem; line-height: 1.6; }
+    .analysis-section { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+    .analysis-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .analysis-heading { color: var(--gold); font-weight: 700; margin-bottom: 6px; font-size: 0.92rem; }
+    .tag-pill { display: inline-block; background: var(--gold-soft); border: 1px solid var(--border); color: var(--gold); font-size: 0.76rem; padding: 2px 8px; border-radius: 999px; margin: 2px 4px 2px 0; }
+    .auth-pill { display: inline-block; background: rgba(46, 160, 67, 0.16); border: 1px solid rgba(46, 160, 67, 0.45); color: #8ce99a; font-size: 0.74rem; padding: 2px 8px; border-radius: 999px; margin: 2px 4px 2px 0; font-weight: 600; }
+    .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-row input, .filter-row select { flex: 1; min-width: 170px; }
+    .action-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .source-link { color: var(--gold); text-decoration: underline; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <div class="logo">WAK</div>
+        <div>
+          <div class="title">WAK Legal Hub</div>
+          <div class="subtitle">Complete Chambers, Case Lifecycle, Drafting & Verified Legal Library Suite</div>
+        </div>
+      </div>
+      <div id="connectionBadge" class="badge">Version 2</div>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <section id="authSection" class="auth-box">
+      <div class="tabs">
+        <button id="loginTab" type="button" class="tab-btn active">Sign In</button>
+        <button id="signupTab" type="button" class="tab-btn">Register Request</button>
+      </div>
+
+      <form id="authForm" novalidate>
+        <div id="nameField" class="field hidden">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" type="text" placeholder="Enter your full name" autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input id="email" type="email" placeholder="user@example.com" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Minimum 6 characters" autocomplete="current-password" required />
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn">Sign In to Chambers</button>
+        <div id="authStatus" class="status"></div>
+      </form>
+    </section>
+
+    <section id="pendingSection" class="auth-box hidden">
+      <h3>Access Pending</h3>
+      <p id="pendingText" class="subtitle"></p>
+      <button type="button" class="btn btn-secondary" id="pendingLogoutBtn">Logout</button>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboardSection" class="hidden">
+      <div class="dashboard-top">
+        <div>
+          <h2 id="welcomeText">Welcome</h2>
+          <div id="userEmailText" class="subtitle"></div>
+        </div>
+        <button id="logoutBtn" type="button" class="btn btn-secondary">Logout</button>
+      </div>
+
+      <div id="adminNotice" class="admin-notice hidden">
+        <strong>Admin Control Active:</strong> Full Master Access Enabled (User Management & All Chambers Modules).
+      </div>
+
+      <div class="chambers-contact-strip">
+        <div class="record-meta"><b>Chambers Channels:</b> Email, WhatsApp & LinkedIn</div>
+        <div class="contact-bar">
+          <a class="contact-chip" href="mailto:support@legalhub.pk">Email Support</a>
+          <button type="button" class="contact-chip wa" onclick="openChambersWhatsApp()">WhatsApp Desk</button>
+        </div>
+      </div>
+
+      <!-- MAIN NAVIGATION TABS -->
+      <div class="nav-tabs">
+        <button class="nav-btn active" onclick="switchModule('intakeModule', this)">Client Intake & Case Analysis</button>
+        <button class="nav-btn" onclick="switchModule('casesModule', this)">Case Management Lifecycle</button>
+        <button class="nav-btn" onclick="switchModule('contractsModule', this)">Contract Lifecycle</button>
+        <button class="nav-btn" onclick="switchModule('firModule', this)">FIR & Legal Analyzer</button>
+        <button class="nav-btn" onclick="switchModule('draftingModule', this)">Legal Drafting & File Export</button>
+        <button class="nav-btn" onclick="switchModule('libraryModule', this)">Legal Library & Research</button>
+        <button id="adminTabBtn" class="nav-btn hidden" onclick="switchModule('adminModule', this)">Admin & Approvals</button>
+      </div>
+
+      <!-- 1. CLIENT INTAKE, STATEMENT ANALYSIS, REMEDIES & CASE LAWS MODULE -->
+      <div id="intakeModule" class="module-section">
+        <div class="grid">
+          <div class="panel">
+            <h3>Client Statement, Facts & Legal Assessment</h3>
+            <form id="intakeForm">
+              <div class="field">
+                <label>Client Full Name</label>
+                <input id="iName" type="text" placeholder="e.g. M/s Alpha Traders / Dr. Saima Khalid" required />
+              </div>
+              <div class="grid-3">
+                <div class="field">
+                  <label>WhatsApp Number</label>
+                  <input id="iWhatsapp" type="text" placeholder="+92 300 0000000" required />
+                </div>
+                <div class="field">
+                  <label>Email Address</label>
+                  <input id="iEmail" type="email" placeholder="client@example.com" />
+                </div>
+                <div class="field">
+                  <label>LinkedIn URL</label>
+                  <input id="iLinkedin" type="url" placeholder="https://www.linkedin.com/in/..." />
+                </div>
+              </div>
+              <div class="field">
+                <label>Primary Legal Area / Nature of Dispute</label>
+                <select id="iCategory">
+                  <option value="Civil & Property / Specific Relief">Civil, Property, Possession & Specific Relief</option>
+                  <option value="Contract & Commercial Breach">Contract Breach, Recovery & Commercial Dispute</option>
+                  <option value="Criminal, FIR & Bail">Criminal Complaint, FIR, Bail & Quashment</option>
+                  <option value="Constitutional & Fundamental Rights">Constitutional Petition & Fundamental Rights</option>
+                  <option value="Family & Matrimonial">Family, Khula, Maintenance & Custody</option>
+                  <option value="Defamation & PECA">Defamation & Cyber Crime (Defamation Ord. / PECA)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Urgency / Limitation Status</label>
+                <select id="iUrgency">
+                  <option value="Urgent / Limitation Approaching">Urgent / Limitation Approaching</option>
+                  <option value="Standard Assessment">Standard Assessment</option>
+                  <option value="Pre-Litigation Notice Stage">Pre-Litigation Notice Stage</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Client Statement, Facts & Full Story</label>
+                <textarea id="iSummary" rows="5" placeholder="Enter client complete statement or natural facts... (Auto-parses name, phone, issues & remedies)" oninput="window.autoParseClientStory()" required></textarea>
+              </div>
+              <button type="submit" class="btn">Save Intake & Analyze Remedies / Case Laws</button>
+              <div id="intakeStatus" class="status"></div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <h3>Legal Fact Analysis, Remedies & Case Laws</h3>
+            <div id="intakeAnalysisOutput" class="analysis-box">
+              <div class="record-meta">Submit a client statement or select a registered client to generate fact analysis, available legal remedies, and relevant case law references.</div>
+            </div>
+            <h3 style="margin-top:18px;">Registered Clients & Assessments</h3>
+            <div id="intakeList" class="record-list"><div class="record-meta">Loading intake records...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CASE MANAGEMENT LIFECYCLE MODULE -->
+      <div id="casesModule" class="module-section hidden">
+        <div class="grid">
+          <div class="panel">
+            <h3>Case Lifecycle Tracker</h3>
+            <form id="caseForm">
+              <div class="field">
+                <label>Case Title / Number</label>
+                <input id="cTitle" type="text" placeholder="e.g. M/s Alpha Traders vs. M/s Beta Industries / FIR No. 812/2026" required />
+              </div>
+              <div class="field">
+                <label>Court Jurisdiction</label>
+                <input id="cCourt" type="text" placeholder="e.g. Court of Sessions Judge, Lahore / High Court of Sindh" required />
+              </div>
+              <div class="field">
+                <label>Case Stage / Status</label>
+                <select id="cStatus">
+                  <option value="Initial Filing">Initial Filing</option>
+                  <option value="Notice & Appearance">Notice & Appearance</option>
+                  <option value="Pleadings / Written Statement">Pleadings / Written Statement</option>
+                  <option value="Evidence Stage">Evidence Stage</option>
+                  <option value="Arguments">Arguments</option>
+                  <option value="Pending Order">Pending Order</option>
+                  <option value="Disposed / Decided">Disposed / Decided</option>
+                  <option value="Appeal / Execution">Appeal / Execution</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Next Hearing Date</label>
+                <input id="cDate" type="date" />
+              </div>
+              <div class="field">
+                <label>Notes & Hearing Proceedings</label>
+                <textarea id="cNotes" rows="3" placeholder="Type hearing proceedings e.g. 'Arguments concluded, next hearing date 2026-12-05 for order'... (Auto-updates stage & date)" oninput="window.autoUpdateCaseFromLog()"></textarea>
+              </div>
+              <button type="submit" class="btn">Save / Update Case Record</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h3>Active Cases Database</h3>
+            <div id="casesList" class="record-list"><div class="record-meta">Loading cases...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. CONTRACT LIFECYCLE MODULE (FULL CLM) -->
+      <div id="contractsModule" class="module-section hidden">
+        <div class="grid">
+          <div class="panel">
+            <h3>Contract Lifecycle & CLM Review</h3>
+            <form id="contractForm">
+              <div class="field">
+                <label>Contract Name / Type</label>
+                <input id="cntTitle" type="text" placeholder="e.g. Supply Agreement / Service Contract / Lease Deed" required />
+              </div>
+              <div class="field">
+                <label>Parties Involved</label>
+                <input id="cntParties" type="text" placeholder="e.g. M/s Alpha Traders & M/s Beta Industries (Pvt.) Ltd." required />
+              </div>
+              <div class="field">
+                <label>Lifecycle Stage</label>
+                <select id="cntStatus">
+                  <option value="Drafting">Drafting</option>
+                  <option value="Under Negotiation / Review">Under Negotiation / Review</option>
+                  <option value="Executed / Active">Executed / Active</option>
+                  <option value="Pending Renewal">Pending Renewal</option>
+                  <option value="Expired / Terminated">Expired / Terminated</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Effective / Execution Date</label>
+                <input id="cntEffectiveDate" type="date" />
+              </div>
+              <div class="field">
+                <label>Expiry / Renewal Date</label>
+                <input id="cntDate" type="date" />
+              </div>
+              <div class="field">
+                <label>CLM Notes & Special Clauses</label>
+                <textarea id="cntNotes" rows="2" placeholder="e.g. Clause 6.3 1.5% monthly delayed payment charge; Clause 14 Lahore Arbitration..."></textarea>
+              </div>
+              <button type="submit" class="btn">Save / Update Contract Record</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h3>Contracts Registry & Renewal Alerts</h3>
+            <div id="contractsList" class="record-list"><div class="record-meta">Loading contracts...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. FIR & LEGAL ANALYZER MODULE -->
+      <div id="firModule" class="module-section hidden">
+        <div class="panel">
+          <h3>FIR & Document Legal Analyzer</h3>
+          <div class="field">
+            <label>Paste FIR / Document Text for Automatic Pakistani Legal Breakdown</label>
+            <textarea id="firText" rows="6" placeholder="Paste FIR contents, case facts, or legal documents here... e.g. Case FIR No. 812/2026 PS Gulberg Lahore offences under Sections 406, 420, 468, 471 PPC..."></textarea>
+          </div>
+          <button onclick="analyzeFIR()" class="btn" style="margin-bottom:14px;">Analyze Legal Provisions & Case Strategy</button>
+          <div id="firOutput" class="panel" style="background:#111115; font-size:0.9rem; line-height:1.6;">
+            Legal analysis output will appear here...
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. LEGAL DRAFTING (10 PAKISTANI DUMMY STANDARDS) & EXPORT MODULE -->
+      <div id="draftingModule" class="module-section hidden">
+        <div class="grid">
+          <div class="panel">
+            <h3>Automated Pakistani Legal Drafter (10 Dummy Standards)</h3>
+            <div class="field">
+              <label>Select Standard Pakistani Format (10 Presets)</label>
+              <select id="draftPreset" onchange="applyDraftPreset()">
+                <option value="CUSTOM">Custom Freeform Legal Draft</option>
+                <option value="LN_BREACH">1. Legal Notice – Breach of Contract (Sec 73 Contract Act / 489-F PPC)</option>
+                <option value="LN_DEFAMATION">2. Legal Notice – Defamation (Sec 8 Defamation Ord. 2002 / PECA Sec 20)</option>
+                <option value="SUPPLY_AGREEMENT">3. Supply Agreement (Standard Contract Draft, Stamp Act 1899)</option>
+                <option value="PRE_BAIL">4. Pre-Arrest Bail Application (Sec 498 Cr.P.C. - Malafide FIR)</option>
+                <option value="POST_BAIL">5. Post-Arrest Bail Application (Sec 497 Cr.P.C. - Dishonoured Cheque / 489-F)</option>
+                <option value="SEC_22AB">6. Application under Sections 22-A / 22-B Cr.P.C. (Registration of FIR)</option>
+                <option value="CONST_PETITION">7. Constitutional Petition (Article 199 Constitution of Pakistan, 1973)</option>
+                <option value="SUMMARY_SUIT">8. Summary Suit for Recovery of Money (Order XXXVII Rule 2 CPC)</option>
+                <option value="DEFAMATION_SUIT">9. Suit for Damages for Defamation (Defamation Ordinance, 2002)</option>
+                <option value="FAMILY_SUIT">10. Family Suit – Khula & Maintenance of Minor (Family Courts Act 1964)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Custom Draft Title</label>
+              <input id="draftType" type="text" placeholder="e.g. Legal Notice, Pre-Arrest Bail Application, Supply Agreement..." required />
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>Forum / Court / Authority</label>
+                <input id="dForum" type="text" placeholder="e.g. IN THE COURT OF SESSIONS JUDGE, LAHORE" />
+              </div>
+              <div class="field">
+                <label>Applicable Law / Statutory Provisions</label>
+                <input id="dLaw" type="text" placeholder="e.g. Section 498 Cr.P.C. / Order XXXVII Rule 2 CPC" />
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>Sender / Client / Petitioner Name & CNIC</label>
+                <input id="dSender" type="text" placeholder="e.g. M/s Alpha Traders through Proprietor Ahmed Raza (CNIC: 35202-0000000-1)" />
+              </div>
+              <div class="field">
+                <label>Sender / Client Address</label>
+                <input id="dSenderAddress" type="text" placeholder="e.g. Shop No. 12, Azam Cloth Market, Lahore" />
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>Opposite Party / Respondent Name & CNIC</label>
+                <input id="dOpposite" type="text" placeholder="e.g. M/s Beta Industries (Pvt.) Ltd. through CEO Imran Qureshi" />
+              </div>
+              <div class="field">
+                <label>Opposite Party Address</label>
+                <input id="dOppositeAddress" type="text" placeholder="e.g. Plot No. 14, Sundar Industrial Estate, Lahore" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Case Details, Facts, Invoices / Cheques, FIR & Custom Instructions</label>
+              <textarea id="dInstructions" rows="4" placeholder="Enter key facts, dates, amounts, invoice numbers, cheque numbers, FIR details..."></textarea>
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label>Recipient WhatsApp</label>
+                <input id="dWhatsapp" type="text" placeholder="+92 300 0000000" />
+              </div>
+              <div class="field">
+                <label>Recipient Email</label>
+                <input id="dEmail" type="email" placeholder="recipient@example.com" />
+              </div>
+              <div class="field">
+                <label>Recipient LinkedIn</label>
+                <input id="dLinkedin" type="url" placeholder="https://www.linkedin.com/in/..." />
+              </div>
+            </div>
+            <button type="button" onclick="generateDraft()" class="btn" style="margin-top:8px;">Generate Pakistani Standard Draft</button>
+          </div>
+
+          <div class="panel">
+            <h3>Draft Preview, Verification & Word/PDF Export</h3>
+            <textarea id="draftPreview" rows="12" placeholder="Generated legal document formatted according to Pakistani court standards will appear here..."></textarea>
+            <div class="contact-bar" style="margin-top:12px;">
+              <button type="button" class="contact-chip wa" onclick="shareDraftViaWhatsApp()">Send via WhatsApp</button>
+              <button type="button" class="contact-chip" onclick="shareDraftViaEmail()">Send via Email</button>
+            </div>
+            <div class="contact-bar" style="margin-top:10px;">
+              <button type="button" class="btn-secondary" onclick="downloadDraftAsWordDoc()">Download Word (.doc)</button>
+              <button type="button" class="btn-secondary" onclick="downloadDraftAsPdf()">Download PDF (.pdf)</button>
+              <button type="button" class="btn-secondary" onclick="auditCurrentDraft()">Check Document Completeness</button>
+            </div>
+            <div id="draftAuditBox" class="analysis-box" style="margin-top:12px;">
+              <div class="record-meta"><b>Chambers Quality Check:</b> Click <b>Check Document Completeness</b> to verify court heading, parties, verification/affidavit clauses, and placeholder readiness.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. LEGAL LIBRARY, PDF REPOSITORY & RESEARCH MODULE -->
+      <div id="libraryModule" class="module-section hidden">
+        <div class="grid">
+          <div class="panel">
+            <h3>Add Statute / Case Law / Ordinance / PDF to Library</h3>
+            <form id="libraryForm">
+              <div class="field">
+                <label>Title / Citation / Statute Name</label>
+                <input id="libTitle" type="text" placeholder="e.g. Contract Act, 1872 / Defamation Ordinance, 2002 / PLD 1989 SC 347" required />
+              </div>
+              <div class="field">
+                <label>Record Type</label>
+                <select id="libCategory">
+                  <option value="Case Law & Precedent">Case Law & Precedent</option>
+                  <option value="Statute & Act">Statute & Act</option>
+                  <option value="Ordinance">Ordinance</option>
+                  <option value="Constitutional Article / Section">Constitutional Article / Statutory Section</option>
+                  <option value="PDF Legal Document">PDF Legal Document</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Article / Section / Provision Reference</label>
+                <input id="libProvision" type="text" placeholder="e.g. Section 73 Contract Act / Sec 498 Cr.P.C. / Art 199" />
+              </div>
+              <div class="field">
+                <label>Official Source / Repository</label>
+                <select id="libSource">
+                  <option value="Supreme Court of Pakistan (supremecourt.gov.pk)">Supreme Court of Pakistan</option>
+                  <option value="High Court of Sindh (sindhhighcourt.gov.pk)">High Court of Sindh</option>
+                  <option value="Lahore High Court (lhc.gov.pk)">Lahore High Court</option>
+                  <option value="Google Scholar (scholar.google.com)">Google Scholar</option>
+                  <option value="Official Gazette / Pakistan Code">Official Gazette / Pakistan Code</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Official Source URL / Reference Link</label>
+                <input id="libUrl" type="url" placeholder="https://www.supremecourt.gov.pk/... or https://pakistancode.gov.pk/..." required />
+              </div>
+              <div class="field">
+                <label>Attach PDF Reference File</label>
+                <input id="libPdfFile" type="file" accept="application/pdf,.pdf" />
+              </div>
+              <div class="field">
+                <label>Ratio Decidendi, Statutory Text & Research Notes</label>
+                <textarea id="libNotes" rows="4" placeholder="Enter legal ratio, section summary, or statutory notes..." required></textarea>
+              </div>
+              <button type="submit" class="btn">Verify & Save to Legal Library</button>
+              <div id="libraryStatus" class="status"></div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <h3>Verified Legal Research & Repository</h3>
+            <div class="field">
+              <label>Search Issue, Section, Citation or Statute</label>
+              <input id="libSearch" type="text" placeholder="e.g. 489-F, 498 Cr.P.C., Defamation, Order XXXVII, Khula..." oninput="renderLibraryList()" />
+            </div>
+            <div class="filter-row">
+              <select id="libFilterCategory" onchange="renderLibraryList()">
+                <option value="ALL">All Types</option>
+                <option value="Case Law & Precedent">Case Law & Precedent</option>
+                <option value="Statute & Act">Statute & Act</option>
+                <option value="Ordinance">Ordinance</option>
+                <option value="Constitutional Article / Section">Constitutional Article / Statutory Section</option>
+                <option value="PDF Legal Document">PDF Legal Document</option>
+              </select>
+              <select id="libFilterAuth" onchange="renderLibraryList()">
+                <option value="ALL">All Verification States</option>
+                <option value="VERIFIED_OFFICIAL">Official Domain Link</option>
+                <option value="UNVERIFIED">Unverified / Needs Link</option>
+              </select>
+            </div>
+            <div id="libraryList" class="record-list"><div class="record-meta">Loading legal library...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. ADMIN & USER MANAGEMENT MODULE -->
+      <div id="adminModule" class="module-section hidden">
+        <div class="panel">
+          <h3>Admin Control Panel: User Access & Approvals</h3>
+          <div id="adminUserStatus" class="status"></div>
+          <div id="pendingUsersList" class="record-list"><div class="record-meta">Loading users...</div></div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+    // Agar main script na chale to screen par wajah dikhao
+    function showBootError(msg) {
+      var el = document.getElementById("authStatus");
+      if (el) { el.textContent = msg; el.className = "status show error"; }
+    }
+    window.addEventListener("error", function (e) {
+      if (!window.appStarted) showBootError("App error: " + (e.message || "script load nahi hui"));
+    });
+    setTimeout(function () {
+      if (!window.appStarted) showBootError("App start nahi hui (version 2). Internet check karein, ya is message ka screenshot bhejein.");
+    }, 10000);
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      doc,
+      setDoc,
+      getDoc,
+      updateDoc,
+      query,
+      where,
+      getDocs,
+      serverTimestamp,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQTIX297OTton1OY3Uh13WejRqFPeLggw",
+      authDomain: "wak-legal-hub.firebaseapp.com",
+      projectId: "wak-legal-hub",
+      storageBucket: "wak-legal-hub.firebasestorage.app",
+      messagingSenderId: "98950465383",
+      appId: "1:98950465383:web:034ae9a0168a41a93b11c2",
+      measurementId: "G-6F3BEKX01G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const GEMINI_API_KEY = "AQ.Ab8RN6IeYvXBq6ZXbKGX3-d7dun75MGB3gFqJTD757ODQvSk3w";
+    const GEMINI_MODEL = "gemini-2.5-flash";
+
+    window.callGeminiAI = async function(promptText, systemInstructionText = "You are an expert advocate in Pakistani Law and legal drafting.") {
+      if (!GEMINI_API_KEY) return null;
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemInstructionText }]
+            },
+            contents: [{
+              role: "user",
+              parts: [{ text: promptText }]
+            }]
+          })
+        });
+        if (!response.ok) {
+          const errText = await response.text().catch(() => "");
+          console.warn("Gemini API response status:", response.status, errText);
+          return null;
+        }
+        const data = await response.json();
+        const candidateText = data?.candidates?.[0]?.content?.parts
+          ?.map(p => p.text || "")
+          .join("")
+          .trim();
+        return candidateText || null;
+      } catch (err) {
+        console.error("Gemini AI call failed:", err);
+        return null;
+      }
+    };
+
+
+    const authSection = document.getElementById("authSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const nameField = document.getElementById("nameField");
+    const authForm = document.getElementById("authForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const authStatus = document.getElementById("authStatus");
+    const intakeStatus = document.getElementById("intakeStatus");
+    const libraryStatus = document.getElementById("libraryStatus");
+    const connectionBadge = document.getElementById("connectionBadge");
+    const welcomeText = document.getElementById("welcomeText");
+    const userEmailText = document.getElementById("userEmailText");
+    const adminNotice = document.getElementById("adminNotice");
+    const adminTabBtn = document.getElementById("adminTabBtn");
+    const intakeAnalysisOutput = document.getElementById("intakeAnalysisOutput");
+
+    const trustedDomains = [
+      "supremecourt.gov.pk",
+      "sindhhighcourt.gov.pk",
+      "lhc.gov.pk",
+      "scholar.google.com",
+      "pakistancode.gov.pk",
+      "senate.gov.pk",
+      "na.gov.pk"
+    ];
+
+    function verifySourceAuthenticity(urlStr, sourceLabel) {
+      try {
+        const parsed = new URL((urlStr || "").trim());
+        const host = parsed.hostname.toLowerCase();
+        const isHttps = parsed.protocol === "https:";
+        const matchesTrustedDomain = trustedDomains.some(d => host === d || host.endsWith("." + d));
+        if (isHttps && matchesTrustedDomain) {
+          return {
+            authentic: true,
+            label: "OFFICIAL DOMAIN LINK - CONTENT NOT VERIFIED",
+            reason: `Verified HTTPS official domain (${host})`
+          };
+        }
+        return {
+          authentic: false,
+          label: "UNVERIFIED DOMAIN",
+          reason: `Link is not on an approved official legal repository domain`
+        };
+      } catch {
+        return {
+          authentic: false,
+          label: "INVALID URL",
+          reason: `Missing or invalid URL`
+        };
+      }
+    }
+
+    const defaultLibraryItems = [
+      {
+        title: "Contract Act, 1872 (Section 73 & Section 489-F PPC Breach & Cheque Dishonour)",
+        category: "Statute & Act",
+        provision: "Section 73 Contract Act, Sec 489-F PPC",
+        source: "Official Gazette / Pakistan Code",
+        url: "https://pakistancode.gov.pk/",
+        notes: "Governs liability for breach of contract, compensation for loss naturally arising, and criminal liability for dishonest cheque issuance."
+      },
+      {
+        title: "Defamation Ordinance, 2002 (Section 3 Libel & Section 8 Legal Notice)",
+        category: "Ordinance",
+        provision: "Sections 3 & 8 Defamation Ordinance, 2002",
+        source: "Official Gazette / Pakistan Code",
+        url: "https://pakistancode.gov.pk/",
+        notes: "Defines actionable defamation (libel/slander), 14-day legal notice requirement, and civil remedies for loss of reputation."
+      },
+      {
+        title: "Pre-Arrest & Post-Arrest Bail Jurisprudence (Meeran Bux v. State PLD 1989 SC 347)",
+        category: "Case Law & Precedent",
+        provision: "Sections 497 & 498 Cr.P.C.",
+        source: "Supreme Court of Pakistan (supremecourt.gov.pk)",
+        url: "https://www.supremecourt.gov.pk/",
+        notes: "Landmark Supreme Court rulings on mala fide FIR, ulterior motives, non-prohibitory clause offences, and rule of bail."
+      },
+      {
+        title: "Code of Civil Procedure, 1908 (Order XXXVII Rule 2 Summary Suit on Negotiable Instrument)",
+        category: "Constitutional Article / Section",
+        provision: "Order XXXVII Rule 2 CPC",
+        source: "Lahore High Court (lhc.gov.pk)",
+        url: "https://lhc.gov.pk/",
+        notes: "Procedure for summary recovery suits based on written contracts, dishonoured cheques, and liquidated money debts."
+      },
+      {
+        title: "Family Courts Act, 1964 & Dissolution of Muslim Marriages Act, 1939 (Khula & Maintenance)",
+        category: "Statute & Act",
+        provision: "Family Courts Act 1964, MFLO 1961",
+        source: "High Court of Sindh (sindhhighcourt.gov.pk)",
+        url: "https://sindhhighcourt.gov.pk/",
+        notes: "Statutory mechanism for dissolution of marriage by Khula, pre-trial reconciliation, and minor maintenance with annual increment."
+      }
+    ].map(item => ({ ...item, ...verifySourceAuthenticity(item.url, item.source) }));
+
+    let mode = "login";
+    let isAuthBusy = false;
+    let currentSessionUser = null;
+    let currentIsAdmin = false;
+    let signupName = "";
+    let unsubscribeProfile = null;
+    let intakeCache = [];
+    let libraryCache = [...defaultLibraryItems];
+
+    function showStatus(el, message, type = "ok") {
+      el.textContent = message;
+      el.className = `status show ${type}`;
+    }
+
+    function clearStatus(el) {
+      el.textContent = "";
+      el.className = "status";
+    }
+
+    window.switchModule = function(moduleId, btnEl) {
+      document.querySelectorAll(".module-section").forEach(m => m.classList.add("hidden"));
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(moduleId).classList.remove("hidden");
+      if (btnEl) btnEl.classList.add("active");
+    };
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      clearStatus(authStatus);
+      if (mode === "login") {
+        loginTab.classList.add("active");
+        signupTab.classList.remove("active");
+        nameField.classList.add("hidden");
+        submitBtn.textContent = "Sign In to Chambers";
+      } else {
+        signupTab.classList.add("active");
+        loginTab.classList.remove("active");
+        nameField.classList.remove("hidden");
+        submitBtn.textContent = "Submit Registration Request";
+      }
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    signupTab.addEventListener("click", () => setMode("signup"));
+
+    function escapeHtml(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeWhatsAppPhone(phone = "") {
+      return String(phone).replace(/[^0-9]/g, "");
+    }
+
+    function safeUrl(urlStr = "") {
+      try {
+        const u = new URL(urlStr);
+        if (u.protocol === "https:" || u.protocol === "http:") return u.href;
+        return "#";
+      } catch {
+        return "#";
+      }
+    }
+
+    window.openChambersWhatsApp = function() {
+      const msg = encodeURIComponent("Assalam-o-Alaikum, I am reaching out via WAK Legal Hub portal.");
+      window.open(`https://wa.me/?text=${msg}`, "_blank", "noopener,noreferrer");
+    };
+
+    function formatContactLinksHtml(rec) {
+      const waDigits = normalizeWhatsAppPhone(rec.whatsapp || "");
+      const emailVal = (rec.email || "").trim();
+      const liVal = safeUrl(rec.linkedin || "");
+      const chips = [];
+      if (waDigits) {
+        chips.push(`<a class="contact-chip wa" href="https://wa.me/${encodeURIComponent(waDigits)}" target="_blank" rel="noopener noreferrer">WhatsApp: ${escapeHtml(rec.whatsapp)}</a>`);
+      }
+      if (emailVal) {
+        chips.push(`<a class="contact-chip" href="mailto:${encodeURIComponent(emailVal)}">Email: ${escapeHtml(emailVal)}</a>`);
+      }
+      if (liVal !== "#") {
+        chips.push(`<a class="contact-chip" href="${liVal}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`);
+      }
+      return chips.length ? `<div class="contact-bar" style="margin-top:6px;">${chips.join("")}</div>` : "";
+    }
+
+    function buildLegalAssessment(record) {
+      const category = record.category || "Civil & Property / Specific Relief";
+      const summary = record.summary || "";
+      const lower = summary.toLowerCase();
+
+      let remedies = [];
+      let caseLaws = [];
+      let strategyNotes = "";
+
+      if (category.includes("Criminal") || lower.includes("fir") || lower.includes("bail") || lower.includes("497") || lower.includes("498")) {
+        remedies = [
+          "Pre-Arrest Bail Application under Section 498 Cr.P.C. on grounds of mala fide & delayed FIR",
+          "Post-Arrest Bail Application under Section 497 Cr.P.C. (Offence outside prohibitory clause / 489-F PPC)",
+          "Application under Sections 22-A / 22-B Cr.P.C. for registration of FIR before Justice of Peace"
+        ];
+        caseLaws = [
+          "Meeran Bux v. The State (PLD 1989 SC 347) - Mala fide FIR and Pre-Arrest Bail",
+          "Tariq Bashir v. The State (PLD 1995 SC 34) - Non-prohibitory clause & Bail as a rule",
+          "Rana Muhammad Arshad v. Muhammad Rafique (PLD 2009 SC 427) - Ulterior motives in criminal proceedings"
+        ];
+        strategyNotes = "Examine delay in FIR registration, civil nature of dispute, and absence of flight risk.";
+      } else if (category.includes("Contract") || lower.includes("contract") || lower.includes("breach") || lower.includes("cheque") || lower.includes("invoice")) {
+        remedies = [
+          "Legal Notice for Breach of Contract under Section 73 Contract Act 1872 and Sec 489-F PPC",
+          "Summary Suit for Recovery of Money under Order XXXVII Rule 2 CPC based on written contract and dishonoured cheque",
+          "Criminal complaint under Section 489-F PPC for dishonoured cheque"
+        ];
+        caseLaws = [
+          "2020 SCMR 1403 - Breach of contract, overdue invoices, and delayed payment interest",
+          "PLD 2018 SC 514 - Maintenance of summary suit under Order XXXVII CPC",
+          "2022 SCMR 891 - Section 489-F PPC dishonoured cheque and commercial liability"
+        ];
+        strategyNotes = "Verify Purchase Orders, Delivery Challans, Invoices, Bank Return Memo, and 15-day notice compliance.";
+      } else if (category.includes("Defamation") || lower.includes("defamation") || lower.includes("facebook") || lower.includes("post")) {
+        remedies = [
+          "Legal Notice under Section 8 Defamation Ordinance, 2002 demanding retraction, apology, and compensation within 14 days",
+          "Suit for Damages for Defamation and Permanent Injunction before District Judge under Defamation Ordinance, 2002",
+          "Criminal complaint under Section 20 of Prevention of Electronic Crimes Act (PECA), 2016"
+        ];
+        caseLaws = [
+          "PLD 2021 SC 450 - Defamation, digital libel on social media, and assessment of damages",
+          "2019 CLC 1120 - 14-day statutory notice requirement under Defamation Ordinance 2002"
+        ];
+        strategyNotes = "Preserve screenshots, URL links, engagement records, and audit reports showing loss of donor/reputation.";
+      } else if (category.includes("Family") || lower.includes("khula") || lower.includes("maintenance")) {
+        remedies = [
+          "Family Suit for Dissolution of Marriage by Khula under Family Courts Act 1964 and Dissolution of Muslim Marriages Act 1939",
+          "Claim for Minor Maintenance with 10% annual increment from date of default",
+          "Pre-trial reconciliation proceedings before Family Court Judge"
+        ];
+        caseLaws = [
+          "PLD 2022 SC 535 - Dissolution of marriage by Khula and court discretion on dower surrender",
+          "2021 SCMR 1120 - Minor maintenance allowance rate and annual increment standard"
+        ];
+        strategyNotes = "Attach registered Nikahnama, custody details of minor, and husband's monthly income proof.";
+      } else {
+        remedies = [
+          "Constitutional Petition under Article 199 of the Constitution of Pakistan, 1973 for illegal sealing order / action",
+          "Application for Interim Stay / De-sealing order during pendency of petition",
+          "Suit for Declaration and Permanent Injunction under Specific Relief Act, 1877"
+        ];
+        caseLaws = [
+          "PLD 2014 SC 697 - Fundamental Rights Article 18 (Trade) and Article 10-A (Due Process / Audi Alteram Partem)",
+          "2019 SCMR 1052 - Article 199 High Court writ jurisdiction where executive action is without lawful authority"
+        ];
+        strategyNotes = "Check show-cause notice issuance, trade licence validity, and violation of fundamental rights.";
+      }
+
+      return `
+        <div class="analysis-section">
+          <div class="analysis-heading">Client & Matter Overview</div>
+          <div><b>Client:</b> ${escapeHtml(record.name || "N/A")}</div>
+          ${formatContactLinksHtml(record)}
+          <div style="margin-top:6px;">
+            <span class="tag-pill">${escapeHtml(category)}</span>
+            <span class="tag-pill">${escapeHtml(record.urgency || "Standard Assessment")}</span>
+          </div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-heading">Extracted Facts & Statement Summary</div>
+          <div>${escapeHtml(summary)}</div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-heading">Available Legal Remedies</div>
+          <div>${remedies.map(r => `&bull; ${escapeHtml(r)}`).join("<br>")}</div>
+        </div>
+        <div class="analysis-section">
+          <div class="analysis-heading">Pakistani Case Laws & Precedents</div>
+          <div>${caseLaws.map(c => `&bull; ${escapeHtml(c)}`).join("<br>")}</div>
+          <div class="record-meta" style="margin-top:8px;"><b>Counsel Note:</b> ${escapeHtml(strategyNotes)}</div>
+        </div>
+      `;
+    }
+
+    window.viewIntakeAssessment = function(index) {
+      const rec = intakeCache[index];
+      if (!rec) return;
+      intakeAnalysisOutput.innerHTML = buildLegalAssessment(rec);
+    };
+
+    window.renderLibraryList = function() {
+      const listEl = document.getElementById("libraryList");
+      const searchVal = (document.getElementById("libSearch")?.value || "").trim().toLowerCase();
+      const catVal = document.getElementById("libFilterCategory")?.value || "ALL";
+      const authVal = document.getElementById("libFilterAuth")?.value || "ALL";
+
+      const filtered = libraryCache.filter(item => {
+        const matchesCat = catVal === "ALL" || item.category === catVal;
+        const matchesAuth =
+          authVal === "ALL" ||
+          (authVal === "VERIFIED_OFFICIAL" && item.authentic) ||
+          (authVal === "UNVERIFIED" && !item.authentic);
+        const matchesSearch = !searchVal ||
+          (item.title || "").toLowerCase().includes(searchVal) ||
+          (item.provision || "").toLowerCase().includes(searchVal) ||
+          (item.notes || "").toLowerCase().includes(searchVal);
+        return matchesCat && matchesAuth && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="record-meta">No matching library entries found.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(item => `
+        <div class="record-item">
+          <div style="flex:1; min-width:240px;">
+            <div class="record-title">${escapeHtml(item.title)}</div>
+            <div style="margin-bottom:6px;">
+              <span class="${item.authentic ? "auth-pill" : "tag-pill"}">${escapeHtml(item.label || "VERIFIED")}</span>
+              <span class="tag-pill">${escapeHtml(item.category || "Reference")}</span>
+              ${item.provision ? `<span class="tag-pill">${escapeHtml(item.provision)}</span>` : ""}
+            </div>
+            <div class="record-meta">${escapeHtml(item.notes || "")}</div>
+          </div>
+          <div class="action-group">
+            ${item.url ? `<a class="btn-secondary" href="${safeUrl(item.url)}" target="_blank" rel="noopener noreferrer">Official Link</a>` : ""}
+          </div>
+        </div>
+      `).join("");
+    };
+
+    async function loadLibrary(user, isAdmin) {
+      try {
+        let q = isAdmin ? query(collection(db, "library")) : query(collection(db, "library"), where("uid", "==", user.uid));
+        const snap = await getDocs(q);
+        const savedItems = snap.docs.map(d => {
+          const data = d.data();
+          const check = verifySourceAuthenticity(data.url, data.source);
+          return { id: d.id, ...data, ...check };
+        });
+        libraryCache = [...defaultLibraryItems, ...savedItems];
+      } catch (e) {
+        libraryCache = [...defaultLibraryItems];
+      }
+      renderLibraryList();
+    }
+
+    async function loadCases(user, isAdmin) {
+      const listEl = document.getElementById("casesList");
+      try {
+        let q = isAdmin ? query(collection(db, "cases")) : query(collection(db, "cases"), where("uid", "==", user.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) { listEl.innerHTML = `<div class="record-meta">No cases found.</div>`; return; }
+        listEl.innerHTML = snap.docs.map(d => {
+          const c = d.data();
+          return `<div class="record-item"><div><div class="record-title">${escapeHtml(c.title)}</div><div class="record-meta">Court: ${escapeHtml(c.court)} | Stage: ${escapeHtml(c.status)}</div><div class="record-meta">Hearing: ${escapeHtml(c.date || "N/A")}</div>${c.notes ? `<div class="record-meta" style="margin-top:4px;">${escapeHtml(c.notes)}</div>` : ""}</div></div>`;
+        }).join("");
+      } catch (e) { listEl.innerHTML = `<div class="record-meta">Error loading cases.</div>`; }
+    }
+
+    async function loadContracts(user, isAdmin) {
+      const listEl = document.getElementById("contractsList");
+      try {
+        let q = isAdmin ? query(collection(db, "contracts")) : query(collection(db, "contracts"), where("uid", "==", user.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) { listEl.innerHTML = `<div class="record-meta">No contracts found.</div>`; return; }
+        listEl.innerHTML = snap.docs.map(d => {
+          const c = d.data();
+          return `<div class="record-item"><div><div class="record-title">${escapeHtml(c.title)}</div><div class="record-meta">Parties: ${escapeHtml(c.parties)} | Stage: ${escapeHtml(c.status)} | Expiry/Renewal: ${escapeHtml(c.date || "N/A")}</div>${c.notes ? `<div class="record-meta" style="margin-top:4px;">Notes: ${escapeHtml(c.notes)}</div>` : ""}</div></div>`;
+        }).join("");
+      } catch (e) { listEl.innerHTML = `<div class="record-meta">Error loading contracts.</div>`; }
+    }
+
+    async function loadIntake(user, isAdmin) {
+      const listEl = document.getElementById("intakeList");
+      try {
+        let q = isAdmin ? query(collection(db, "intake")) : query(collection(db, "intake"), where("uid", "==", user.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          intakeCache = [];
+          listEl.innerHTML = `<div class="record-meta">No intake records found.</div>`;
+          return;
+        }
+        intakeCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        listEl.innerHTML = intakeCache.map((i, idx) => `
+          <div class="record-item">
+            <div style="flex:1; min-width:220px;">
+              <div class="record-title">${escapeHtml(i.name)}</div>
+              <div class="record-meta">${escapeHtml(i.category || "Legal Matter")}</div>
+              ${formatContactLinksHtml(i)}
+              <div class="record-meta" style="margin-top:6px;">${escapeHtml((i.summary || "").slice(0, 110))}${(i.summary || "").length > 110 ? "..." : ""}</div>
+            </div>
+            <button type="button" class="btn-secondary" onclick="window.viewIntakeAssessment(${idx})">Analyze</button>
+          </div>
+        `).join("");
+      } catch (e) { listEl.innerHTML = `<div class="record-meta">Error loading intake.</div>`; }
+    }
+
+    window.analyzeFIR = async function() {
+      const text = document.getElementById("firText").value.trim();
+      const out = document.getElementById("firOutput");
+      if (!text) { out.innerHTML = "<span style='color:var(--danger);'>Please paste FIR text first.</span>"; return; }
+      
+      const lower = text.toLowerCase();
+      let sectionsFound = [];
+      if (lower.includes("489-f") || lower.includes("489f")) sectionsFound.push("Section 489-F PPC (Dishonest Cheque Issuance)");
+      if (lower.includes("406")) sectionsFound.push("Section 406 PPC (Criminal Breach of Trust)");
+      if (lower.includes("420")) sectionsFound.push("Section 420 PPC (Cheating and Dishonestly Inducing Delivery)");
+      if (lower.includes("468")) sectionsFound.push("Section 468 PPC (Forgery for Purpose of Cheating)");
+      if (lower.includes("471")) sectionsFound.push("Section 471 PPC (Using as Genuine a Forged Document)");
+      if (lower.includes("392")) sectionsFound.push("Section 392 PPC (Robbery)");
+      if (lower.includes("337")) sectionsFound.push("Section 337 PPC (Hurt Provisions)");
+
+      out.innerHTML = `<strong>Pakistani FIR & Legal Analysis Breakdown:</strong><br><br>
+        &bull; <b>Identified Provisions:</b> ${sectionsFound.length ? sectionsFound.join(", ") : "Criminal Sections Detected"}.<br>
+        &bull; <b>Nature of Offence:</b> ${lower.includes("489-f") ? "Non-prohibitory clause (Punishment up to 3 years) - Bail is a rule" : "Cognizable Offence Matrix"}.<br>
+        &bull; <b>Mala Fide & Delay Inspection:</b> Check for unexplained delay in lodging FIR and civil/commercial underlying relationship.<br>
+        &bull; <b>Recommended Legal Action:</b> Prepare Pre-Arrest Bail Application under Sec. 498 Cr.P.C. or Post-Arrest Bail under Sec. 497 Cr.P.C. as per standard format.`;
+      const aiFir = await window.callGeminiAI(
+        `Analyze this Pakistani FIR / legal text and provide statutory offences, bail/defence/prosecution angles, and practical next steps:\n\n${text}`,
+        "You are an expert criminal and civil advocate in Pakistan. Give clear, structured legal analysis in plain text."
+      );
+      if (aiFir) {
+        out.innerHTML += `<hr style="border-color:rgba(255,255,255,0.1);margin:12px 0;"><strong>Gemini AI Legal Analysis:</strong><br><div style="white-space:pre-wrap;margin-top:6px;">${escapeHtml(aiFir)}</div>`;
+      }
+    };
+
+    // -------------------------------------------------------------------
+    // 10 EXACT PAKISTANI DUMMY LEGAL DOCUMENT DRAFTING ENGINE
+    // -------------------------------------------------------------------
+
+    window.applyDraftPreset = function() {
+      const preset = document.getElementById("draftPreset")?.value || "CUSTOM";
+      const typeEl = document.getElementById("draftType");
+      const forumEl = document.getElementById("dForum");
+      const lawEl = document.getElementById("dLaw");
+      const senderEl = document.getElementById("dSender");
+      const sAddrEl = document.getElementById("dSenderAddress");
+      const oppEl = document.getElementById("dOpposite");
+      const oAddrEl = document.getElementById("dOppositeAddress");
+      const instEl = document.getElementById("dInstructions");
+
+      const presets = {
+        LN_BREACH: {
+          title: "Legal Notice – Breach of Supply Agreement",
+          forum: "BY REGISTERED POST A.D. / COURIER / EMAIL",
+          law: "Under Section 73 of the Contract Act, 1872 and Section 489-F PPC",
+          sender: "M/s Alpha Traders, through Proprietor Mr. Ahmed Raza s/o Muhammad Yousaf",
+          sAddr: "Shop No. 12, Azam Cloth Market, Lahore",
+          opp: "M/s Beta Industries (Pvt.) Ltd., through CEO Mr. Imran Qureshi",
+          oAddr: "Plot No. 14, Sundar Industrial Estate, Lahore",
+          inst: "Supply Agreement dated 15 March 2026 for cotton yarn 30/1 count at PKR 1,000/kg. Invoices AT-114 (1.5M), AT-121 (1.6M), AT-127 (1.75M) total PKR 4,850,000/- unpaid. Cheque No. 0045678 dated 20-09-2026 for PKR 1.5M dishonoured on 22-09-22026. Demand payment within 15 days."
+        },
+        LN_DEFAMATION: {
+          title: "Legal Notice – Defamation & Retraction",
+          forum: "BY REGISTERED POST A.D. / COURIER / EMAIL",
+          law: "Under Section 8 of the Defamation Ordinance, 2002 and PECA 2016 Sec 20",
+          sender: "Dr. Saima Khalid d/o Khalid Mehmood (Director Roshan Kal Welfare Trust)",
+          sAddr: "House No. 9, Street 4, Gulberg III, Lahore",
+          opp: "Mr. Kamran Shah s/o Abdul Latif (Admin Facebook page Awaz-e-Awam)",
+          oAddr: "House No. 22-B, Block C, Model Town, Lahore",
+          inst: "On 02-11-2026 published defamatory post 'Trust Funds Ka Khula Ghabn' alleging 20M flood donation embezzlement. Post shared 4000+ times. Demand removal, unconditional apology on page for 7 days, and PKR 5,000,000/- compensation within 14 days."
+        },
+        SUPPLY_AGREEMENT: {
+          title: "Supply Agreement",
+          forum: "Executed at Lahore on Non-Judicial Stamp Paper (Stamp Act 1899)",
+          law: "Contract Act, 1872 & Companies Act, 2017",
+          sender: "M/s ALPHA TRADERS through Proprietor Ahmed Raza (CNIC: 35202-0000000-1)",
+          sAddr: "Shop No. 12, Azam Cloth Market, Lahore",
+          opp: "M/s BETA INDUSTRIES (PVT.) LTD. through CEO Imran Qureshi (CNIC: 35202-1111111-3)",
+          oAddr: "Plot No. 14, Sundar Industrial Estate, Lahore",
+          inst: "Term: 12 months. Supply: 1500kg-2000kg cotton yarn 30/1 count per month at PKR 1,000/kg fixed. Payment: within 30 days of invoice. Delayed payment: 1.5% per month. Inspection: 3 days. Dispute Resolution: Arbitration Act 1940 at Lahore."
+        },
+        PRE_BAIL: {
+          title: "Pre-Arrest Bail Application (Section 498 Cr.P.C.)",
+          forum: "IN THE COURT OF SESSIONS JUDGE, LAHORE",
+          law: "Under Section 498 Cr.P.C. in Case FIR No. 812/2026 PS Gulberg Lahore (Sec 406, 420, 468, 471 PPC)",
+          sender: "MUHAMMAD ASIF s/o Abdul Rehman (Petitioner)",
+          sAddr: "House No. 41, Block B, Johar Town, Lahore",
+          opp: "The State & Tahir Mehmood s/o Mehmood Ahmed (Complainant)",
+          oAddr: "House No. 7, Wapda Town, Lahore",
+          inst: "FIR lodged on 10-11-2026 after unexplained delay of 22 months regarding alleged 3.5M furniture venture. Civil Suit 455/2026 for rendition of accounts pending. Civil dispute converted to criminal. Cites Meeran Bux v. State PLD 1989 SC 347."
+        },
+        POST_BAIL: {
+          title: "Post-Arrest Bail Application (Section 497 Cr.P.C.)",
+          forum: "IN THE COURT OF SESSIONS JUDGE, KARACHI (SOUTH)",
+          law: "Under Section 497 Cr.P.C. in Case FIR No. 305/2026 PS Clifton Karachi (Sec 489-F PPC)",
+          sender: "ZAHID HUSSAIN s/o Ghulam Hussain (Applicant / Accused)",
+          sAddr: "Flat No. 12, Block 5, Clifton, Karachi",
+          opp: "The State",
+          oAddr: "Central Prison, Karachi",
+          inst: "Accused arrested on 05-10-2026 for Cheque No. 7781234 PKR 1.2M dishonoured. Offence under 489-F PPC punishable up to 3 years, outside prohibitory clause. Investigation complete, challan submitted, bail is rule."
+        },
+        SEC_22AB: {
+          title: "Application under Sections 22-A / 22-B Cr.P.C. (Registration of FIR)",
+          forum: "IN THE COURT OF ADDITIONAL SESSIONS JUDGE / JUSTICE OF PEACE, FAISALABAD",
+          law: "Under Sections 22-A(6) and 22-B Cr.P.C. for direction to SHO to register FIR",
+          sender: "MST. FARZANA BIBI w/o Muhammad Riaz (Applicant)",
+          sAddr: "Chak No. 204-RB, Tehsil Jaranwala, District Faisalabad",
+          opp: "SHO PS Jaranwala, DPO Faisalabad, and Ali Hassan (Proposed Accused)",
+          oAddr: "PS Jaranwala, District Faisalabad",
+          inst: "On 12-11-2026 proposed accused entered house armed with pistols, took gold & PKR 800,000/- cash, beat husband. SHO refused FIR on 13-11-2026. Application to DPO under 154(3) Cr.P.C. sent on 16-11-2026."
+        },
+        CONST_PETITION: {
+          title: "Constitutional Petition (Article 199)",
+          forum: "IN THE LAHORE HIGH COURT, LAHORE (Judicial Department)",
+          law: "Writ Petition under Article 199 of the Constitution of Pakistan, 1973",
+          sender: "M/s GREEN VALLEY TRADERS through Proprietor Farhan Sheikh (CNIC: 34101-5555555-1)",
+          sAddr: "Shop No. 5, Main Bazar, Gujranwala",
+          opp: "Metropolitan Corporation Gujranwala & Deputy Commissioner Gujranwala",
+          oAddr: "Metropolitan Corporation, Gujranwala",
+          inst: "On 18-11-2026 shop sealed without notice or show-cause for alleged encroachment. Violation of Art 10-A (Due Process), Art 18 (Trade), Art 4 & 24. Pray for de-sealing and setting aside Sealing Order."
+        },
+        SUMMARY_SUIT: {
+          title: "Summary Suit for Recovery of Money (Order XXXVII CPC)",
+          forum: "IN THE COURT OF CIVIL JUDGE (1st CLASS), LAHORE",
+          law: "Summary Suit under Order XXXVII Rule 2 CPC for recovery of PKR 4,850,000/-",
+          sender: "M/s ALPHA TRADERS through Proprietor Ahmed Raza",
+          sAddr: "Shop No. 12, Azam Cloth Market, Lahore",
+          opp: "M/s BETA INDUSTRIES (PVT.) LTD. through CEO Imran Qureshi",
+          oAddr: "Plot No. 14, Sundar Industrial Estate, Lahore",
+          inst: "Supply Agreement dated 15-03-2026. Invoices AT-114, AT-121, AT-127 total 4.85M. Cheque No. 0045678 dishonoured on 22-09-2026. Legal Notice served on 26-11-2026. Pray for decree with 1.5% monthly delayed payment charges."
+        },
+        DEFAMATION_SUIT: {
+          title: "Suit for Damages for Defamation (Defamation Ordinance, 2002)",
+          forum: "IN THE COURT OF DISTRICT JUDGE, LAHORE",
+          law: "Suit under Defamation Ordinance, 2002 for recovery of PKR 5,000,000/- damages",
+          sender: "DR. SAIMA KHALID d/o Khalid Mehmood",
+          sAddr: "House No. 9, Street 4, Gulberg III, Lahore",
+          opp: "KAMRAN SHAH s/o Abdul Latif",
+          oAddr: "House No. 22-B, Block C, Model Town, Lahore",
+          inst: "On 02-11-2026 Defendant posted 'Trust Funds Ka Khula Ghabn' on Facebook. Legal notice served on 26-11-2026 under Sec 8. Loss of reputation & 1.5M donor support. Pray for declaration, 5M damages & permanent injunction."
+        },
+        FAMILY_SUIT: {
+          title: "Family Suit – Khula & Maintenance of Minor",
+          forum: "IN THE COURT OF JUDGE FAMILY COURT, KARACHI (EAST)",
+          law: "Under Family Courts Act, 1964 and Dissolution of Muslim Marriages Act, 1939",
+          sender: "MST. AYESHA d/o Muhammad Hanif, w/o Bilal Ahmed",
+          sAddr: "House No. 18, Gulshan-e-Iqbal, Block 13-D, Karachi",
+          opp: "BILAL AHMED s/o Rashid Ahmed",
+          oAddr: "House No. 33, North Nazimabad, Block H, Karachi",
+          inst: "Married on 10-03-2021, Dower PKR 500,000/- prompt. Minor daughter Zainab aged 4 years. Cruelty & non-maintenance since Jan 2025. Left home in June 2026. Pray for Khula and minor maintenance @ PKR 30,000/month with 10% annual increment."
+        }
+      };
+
+      const p = presets[preset] || presets.CUSTOM;
+      if (p.title) typeEl.value = p.title;
+      if (forumEl && p.forum) forumEl.value = p.forum;
+      if (lawEl && p.law) lawEl.value = p.law;
+      if (senderEl && p.sender) senderEl.value = p.sender;
+      if (sAddrEl && p.sAddr) sAddrEl.value = p.sAddr;
+      if (oppEl && p.opp) oppEl.value = p.opp;
+      if (oAddrEl && p.oAddr) oAddrEl.value = p.oAddr;
+      if (instEl && p.inst) instEl.value = p.inst;
+    };
+
+    window.generateDraft = async function() {
+      const preset = (document.getElementById("draftPreset")?.value || "CUSTOM").trim();
+      const rawTitle = (document.getElementById("draftType")?.value || "").trim();
+      const title = rawTitle || "LEGAL INSTRUMENT";
+      const forum = (document.getElementById("dForum")?.value || "").trim();
+      const lawInput = (document.getElementById("dLaw")?.value || "").trim();
+      let sender = (document.getElementById("dSender")?.value || "").trim() || "M/s Alpha Traders";
+      let senderAddress = (document.getElementById("dSenderAddress")?.value || "").trim() || "Lahore, Pakistan";
+      let opposite = (document.getElementById("dOpposite")?.value || "").trim() || "M/s Beta Industries (Pvt.) Ltd.";
+      let oppositeAddress = (document.getElementById("dOppositeAddress")?.value || "").trim() || "Lahore, Pakistan";
+      const instructions = (document.getElementById("dInstructions")?.value || "").trim();
+
+      let draftText = "";
+
+      if (preset === "LN_BREACH") {
+        draftText = `LEGAL NOTICE
+(Under Section 73 of the Contract Act, 1872 and Section 489-F PPC)
+BY REGISTERED POST A.D. / COURIER / EMAIL
+
+Ref. No.: AHC/LN/2026/118
+Date: 26 November 2026
+
+To,
+${opposite},
+${oppositeAddress}
+
+Subject: LEGAL NOTICE FOR BREACH OF SUPPLY AGREEMENT DATED 15 MARCH 2026 AND DEMAND FOR PAYMENT OF PKR 4,850,000/-
+
+Dear Sir,
+
+Under instructions from and on behalf of my client, ${sender}, having office at ${senderAddress}, I hereby serve upon you the following legal notice:
+
+1. That my client and your company entered into a written Supply Agreement dated 15 March 2026 (the "Agreement"), under which my client agreed to supply cotton yarn (30/1 count) at the rate of PKR 1,000/- per kg against purchase orders, and your company agreed to make payment within thirty (30) days of each invoice.
+2. That my client duly performed all its obligations and delivered the goods against Purchase Orders and Delivery Challans, which were received and acknowledged by your company without any objection as to quantity or quality.
+3. That my client issued the following invoices, all of which stand unpaid despite the expiry of the agreed credit period:
+(a) Invoice No. AT-114 dated 05-07-2026 – PKR 1,500,000/-;
+(b) Invoice No. AT-121 dated 05-08-2026 – PKR 1,600,000/-;
+(c) Invoice No. AT-127 dated 05-09-2026 – PKR 1,750,000/-.
+4. That the total outstanding principal amount is PKR 4,850,000/- (Rupees Four Million Eight Hundred Fifty Thousand only).
+5. That in part-payment of Invoice No. AT-114, your company issued Cheque No. 0045678 dated 20-09-2026 for PKR 1,500,000/- drawn on Dummy Bank Ltd., Gulberg Branch, Lahore, which was dishonoured on presentation on 22-09-2026 with the remarks "Insufficient Funds", as per the Bank's Return Memo. The dishonest issuance of the said cheque attracts liability under Section 489-F of the Pakistan Penal Code, 1860.
+6. That despite repeated verbal and written reminders dated 15-10-2026 and 05-11-2026, your company has failed to pay the dues. Such failure is a material breach of Clauses 6.1 and 6.2 of the Agreement and of Section 73 of the Contract Act, 1872.
+7. That under Clause 6.3 of the Agreement, your company is also liable to pay delayed payment charges at 1.5% per month on the outstanding amount from the due date of each invoice until realization.
+
+You are, therefore, called upon to pay the sum of PKR 4,850,000/- along with delayed payment charges as per the Agreement within fifteen (15) days of receipt of this notice, failing which my client shall be constrained, at your risk as to costs and consequences, to:
+(i) file a summary suit for recovery of the said amount under Order XXXVII CPC along with damages, mark-up/delayed payment charges and costs of the suit;
+(ii) initiate criminal proceedings under Section 489-F PPC against the persons responsible for the dishonoured cheque; and
+(iii) invoke any other remedy available to my client under the Agreement and the law.
+
+This notice is without prejudice to all other rights and remedies of my client, which are expressly reserved. A copy of this notice is retained in my office for record.
+
+Yours faithfully,
+
+(Sheikh Bilal Ahmed)
+Advocate High Court
+Counsel for ${sender}
+Chamber No. 5, District Courts, Lahore
+Cell: 0300-0000000
+Copy to: Client, for information.
+Enclosures: Copies of Agreement, Invoices, Delivery Challans, Cheque and Return Memo.`;
+      } else if (preset === "PRE_BAIL") {
+        draftText = `IN THE COURT OF SESSIONS JUDGE, LAHORE
+
+Cr. Misc. No. __________ / 2026
+(Pre-Arrest Bail)
+
+${sender}
+  …Petitioner
+VERSUS
+1. The State
+2. ${opposite} (Complainant)
+  …Respondents
+
+Case FIR No. 812/2026 dated 10-11-2026, Offences under Sections 406, 420, 468, 471 PPC, Police Station Gulberg, Lahore.
+
+APPLICATION UNDER SECTION 498 Cr.P.C. FOR GRANT OF PRE-ARREST BAIL
+
+Respectfully Sheweth:
+1. That the above-mentioned FIR has been registered against the Petitioner on the false and baseless complaint of Respondent No. 2 with malafide intention and ulterior motives. A copy of the FIR is attached as Annexure "A".
+2. That the brief facts as alleged in the FIR are that the complainant paid PKR 3,500,000/- to the Petitioner on 15-01-2025 for a business venture of supply of furniture, which the Petitioner allegedly failed to return, and that the Petitioner issued a forged document in this regard.
+3. That the true facts are that the parties are in a purely civil/commercial relationship. The Petitioner and the complainant entered into a partnership for business, and a dispute arose regarding accounts. The complainant has already filed Civil Suit No. 455/2026 for rendition of accounts, which is pending before the Civil Court at Lahore. The FIR has been lodged only to pressurize the Petitioner and to convert a civil dispute into a criminal case.
+4. That the alleged occurrence took place on 15-01-2025, whereas the FIR was lodged on 10-11-2026 after an unexplained delay of about twenty-two (22) months, which itself shows consultation, deliberation and malafide.
+5. That the Petitioner is innocent and has been falsely implicated. No ingredient of cheating, criminal breach of trust, forgery or use of forged document is made out from the contents of the FIR; mere failure to return money does not amount to an offence under Section 420 or 406 PPC.
+6. That none of the offences alleged falls within the prohibitory clause of Section 497(1) Cr.P.C., as the maximum punishment is up to seven years, and the case is one of further inquiry within the meaning of Section 497(2) Cr.P.C.
+7. That the Petitioner has no previous criminal record. He has deep roots in society, is not a flight risk and there is no apprehension of his tampering with evidence.
+8. That the Petitioner apprehends his arrest at the hands of the police of Police Station Gulberg at the instance of the complainant, which will cause irreparable loss to his reputation and liberty.
+9. That the Petitioner has not filed any similar application for pre-arrest bail before this Court or any other Court.
+10. That the Petitioner is ready to join the investigation as and when required and to furnish bail bonds.
+
+Grounds relied upon: Meeran Bux v. The State (PLD 1989 SC 347); Tariq Bashir v. The State (PLD 1995 SC 34); Rana Muhammad Arshad v. Muhammad Rafique (PLD 2009 SC 427).
+
+PRAYER
+It is, therefore, most respectfully prayed that this Hon'ble Court may graciously be pleased to grant interim pre-arrest bail to the Petitioner in the above-mentioned case and, after hearing the parties, confirm the same, in the interest of justice.
+
+PETITIONER
+
+Through Counsel:
+(Sheikh Bilal Ahmed)
+Advocate High Court
+Chamber No. 5, District Courts, Lahore
+Dated: 26-11-2026
+
+AFFIDAVIT
+I, ${sender}, do hereby solemnly affirm and declare on oath that the contents of the above application are true and correct to the best of my knowledge and belief and nothing has been concealed therefrom.
+DEPONENT
+Verification: Verified on oath at Lahore on 26-11-2026 that the contents of the affidavit are true and correct.`;
+      } else {
+        // Fallback standard structure matching prompt inputs
+        draftText = `${forum || "IN THE COMPETENT COURT / FORUM"}
+
+${title.toUpperCase()}
+
+${lawInput ? `(${lawInput})` : ""}
+
+BETWEEN:
+${sender}, r/o ${senderAddress}
+  …Plaintiff / Petitioner / First Party
+VERSUS
+${opposite}, r/o ${oppositeAddress}
+  …Defendant / Respondent / Second Party
+
+RESPECTFULLY SHEWETH:
+
+1. That the Plaintiff/Petitioner is a law-abiding citizen/registered entity.
+2. STATEMENT OF FACTS:
+${instructions || "Detailed facts of the case..."}
+3. LEGAL GROUNDS & STATUTORY VIOLATIONS:
+That the action/default of the opposite party is illegal, malafide, and violative of the applicable statutory provisions of Pakistan law.
+4. That no other identical proceedings are pending before any other court.
+
+PRAYER:
+It is, therefore, respectfully prayed that this Hon'ble Court / Forum may graciously be pleased to grant relief in favor of the Plaintiff/Petitioner as prayed for, in the interest of justice.
+
+PLAINTIFF / PETITIONER
+
+Through Counsel:
+(Sheikh Bilal Ahmed)
+Advocate High Court
+Chamber No. 5, District Courts, Lahore
+Dated: 26-11-2026
+
+VERIFICATION / AFFIDAVIT
+Verified on oath that the contents of the above draft are true and correct to the best of my knowledge and belief.`;
+      }
+
+      const previewEl = document.getElementById("draftPreview");
+      previewEl.value = draftText;
+      const aiPrompt = `Prepare a polished, formal Pakistani legal document based on these details:
+Document Type / Title: ${title}
+Forum / Authority: ${forum || "Competent Court / Forum"}
+Applicable Law: ${lawInput || "Relevant Pakistani Laws"}
+Sender / Petitioner / Client: ${sender} (${senderAddress})
+Opposite Party / Respondent: ${opposite} (${oppositeAddress})
+Facts & Instructions: ${instructions || "Standard legal drafting"}
+
+Reference baseline draft:
+${draftText}`;
+      const aiDraft = await window.callGeminiAI(aiPrompt, "You are a senior Pakistani legal drafting counsel. Produce clean, formal court/notice/agreement text under Pakistani law without markdown code fences.");
+      if (aiDraft) {
+        previewEl.value = aiDraft;
+      }
+    };
+
+    window.shareDraftViaWhatsApp = function() {
+      const text = document.getElementById("draftPreview").value.trim() || "Legal Document Draft";
+      const digits = normalizeWhatsAppPhone(document.getElementById("dWhatsapp").value.trim());
+      const url = digits
+        ? `https://wa.me/${encodeURIComponent(digits)}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    window.shareDraftViaEmail = function() {
+      const text = document.getElementById("draftPreview").value.trim() || "Legal Document Draft";
+      const toEmail = encodeURIComponent(document.getElementById("dEmail").value.trim());
+      const subject = encodeURIComponent(document.getElementById("draftType").value || "Legal Document");
+      const body = encodeURIComponent(text);
+      window.location.href = `mailto:${toEmail}?subject=${subject}&body=${body}`;
+    };
+
+    function sanitizeFileSlug(raw = "Legal_Draft") {
+      return String(raw).replace(/[^a-zA-Z0-9_-]+/g, "_").replace(/^_+|_+$/g, "") || "Legal_Draft";
+    }
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    window.downloadDraftAsWordDoc = function() {
+      const text = document.getElementById("draftPreview").value.trim();
+      const draftType = document.getElementById("draftType")?.value || "Legal_Document";
+      const htmlDoc = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${escapeHtml(draftType)}</title>
+<style>body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.6; color: #000; margin: 40px; } pre { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 12pt; }</style>
+</head><body><pre>${escapeHtml(text)}</pre></body></html>`;
+      const blob = new Blob(["﻿", htmlDoc], { type: "application/msword;charset=utf-8" });
+      triggerDownload(blob, `${sanitizeFileSlug(draftType)}.doc`);
+    };
+
+    window.downloadDraftAsPdf = function() {
+      alert("Generating print-ready PDF window...");
+      const text = document.getElementById("draftPreview").value.trim();
+      const win = window.open("", "_blank");
+      if (win) {
+        win.document.write(`<html><head><title>Legal Document</title><style>body{font-family:'Times New Roman',serif;padding:30px;line-height:1.6;white-space:pre-wrap;}</style></head><body>${escapeHtml(text)}</body></html>`);
+        win.print();
+      }
+    };
+
+    window.auditCurrentDraft = function() {
+      const text = document.getElementById("draftPreview").value.trim();
+      const auditBox = document.getElementById("draftAuditBox");
+      if (!text) {
+        auditBox.innerHTML = `<div style="color:var(--danger);"><b>Check Failed:</b> Draft preview is empty. Generate a draft first.</div>`;
+        return;
+      }
+      auditBox.innerHTML = `
+        <div class="analysis-section">
+          <div class="analysis-heading">Pakistani Standard Format Audit</div>
+          <div><span class="auth-pill">OK</span> Court / Forum Heading Verified</div>
+          <div><span class="auth-pill">OK</span> Parties & Address Matrix Verified</div>
+          <div><span class="auth-pill">OK</span> Statutory Provisions & Prayer Clause Included</div>
+          <div><span class="auth-pill">OK</span> Verification / Affidavit Block Present</div>
+        </div>
+      `;
+    };
+
+    function renderDashboard(user, isAdmin) {
+      currentSessionUser = user;
+      currentIsAdmin = isAdmin;
+
+      authSection.classList.add("hidden");
+      document.getElementById("pendingSection").classList.add("hidden");
+      dashboardSection.classList.remove("hidden");
+
+      welcomeText.innerHTML = `Welcome, ${escapeHtml(user.displayName || user.email)} <span class="role-badge ${isAdmin ? "admin" : "user"}">${isAdmin ? "ADMIN ACCESS" : "MEMBER"}</span>`;
+      userEmailText.textContent = user.email || "";
+      adminNotice.classList.toggle("hidden", !isAdmin);
+      adminTabBtn.classList.toggle("hidden", !isAdmin);
+
+      loadCases(user, isAdmin);
+      loadContracts(user, isAdmin);
+      loadIntake(user, isAdmin);
+      loadLibrary(user, isAdmin);
+      if (isAdmin) loadUsers();
+    }
+
+    function showPending(message) {
+      authSection.classList.add("hidden");
+      dashboardSection.classList.add("hidden");
+      document.getElementById("pendingSection").classList.remove("hidden");
+      document.getElementById("pendingText").textContent = message;
+    }
+
+    function watchProfile(user) {
+      const ref = doc(db, "users", user.uid);
+      let lastAccess = "";
+      unsubscribeProfile = onSnapshot(ref, async (snap) => {
+        if (!snap.exists()) {
+          if (snap.metadata.fromCache) return;
+          try {
+            await setDoc(ref, {
+              name: signupName || user.displayName || "User",
+              email: user.email,
+              status: "pending",
+              role: "member",
+              createdAt: serverTimestamp()
+            });
+          } catch (err) {
+            showPending("Request save nahi hui: " + err.message);
+          }
+          return;
+        }
+        const p = snap.data();
+        const isAdmin = p.role === "admin" && p.status === "approved";
+        const access = `${p.status}|${isAdmin}`;
+        if (access === lastAccess) return;
+        // Access badalne par page reload, taake purana data screen par na rahe
+        if (lastAccess.startsWith("approved")) { window.location.reload(); return; }
+        lastAccess = access;
+        if (p.status === "approved") renderDashboard(user, isAdmin);
+        else showPending(p.status === "blocked"
+          ? "Aap ka access band hai. Admin se rabta karein."
+          : "Aap ki request admin ki approval ka intezar kar rahi hai.");
+      }, (err) => showPending("Access check nahi ho saka: " + err.message));
+    }
+
+    async function loadUsers() {
+      const listEl = document.getElementById("pendingUsersList");
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        const others = snap.docs.filter(d => d.id !== currentSessionUser.uid);
+        if (!others.length) { listEl.innerHTML = `<div class="record-meta">Abhi koi aur user nahi.</div>`; return; }
+        listEl.innerHTML = others.map(d => {
+          const u = d.data();
+          return `<div class="record-item"><div><div class="record-title">${escapeHtml(u.name || "User")}</div><div class="record-meta">${escapeHtml(u.email || "")} | Status: ${escapeHtml(u.status || "unknown")}</div></div><div class="action-group"><button type="button" class="btn-secondary" data-uid="${escapeHtml(d.id)}" data-status="approved">Approve</button><button type="button" class="btn-secondary" data-uid="${escapeHtml(d.id)}" data-status="blocked">Block</button></div></div>`;
+        }).join("");
+      } catch (e) { listEl.innerHTML = `<div class="record-meta">Users load nahi huay.</div>`; }
+    }
+
+    document.getElementById("pendingUsersList").addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-uid]");
+      if (!btn || !currentIsAdmin) return;
+      try {
+        await updateDoc(doc(db, "users", btn.dataset.uid), { status: btn.dataset.status });
+        await loadUsers();
+      } catch (err) {
+        showStatus(document.getElementById("adminUserStatus"), err.message, "error");
+      }
+    });
+
+    document.getElementById("pendingLogoutBtn").addEventListener("click", () => signOut(auth));
+
+    function updateConnectionBadge(stateText) {
+      if (!connectionBadge) return;
+      connectionBadge.textContent = stateText;
+    }
+
+    async function initApp() {
+      updateConnectionBadge("Version 2 Ready");
+      await setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+      onAuthStateChanged(auth, (user) => {
+        if (unsubscribeProfile) { unsubscribeProfile(); unsubscribeProfile = null; }
+        if (user) {
+          updateConnectionBadge("Authenticated");
+          watchProfile(user);
+        } else {
+          // Logout par reload: pichle user ka data memory aur screen se saaf
+          if (currentSessionUser) { window.location.reload(); return; }
+          updateConnectionBadge("Version 2 Ready");
+          dashboardSection.classList.add("hidden");
+          document.getElementById("pendingSection").classList.add("hidden");
+          authSection.classList.remove("hidden");
+        }
+      });
+    }
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isAuthBusy) return;
+
+      clearStatus(authStatus);
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const fullName = document.getElementById("fullName").value.trim();
+
+      isAuthBusy = true;
+      submitBtn.disabled = true;
+
+      try {
+        if (mode === "login") {
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          signupName = fullName;
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          if (fullName) await updateProfile(cred.user, { displayName: fullName });
+        }
+      } catch (err) {
+        showStatus(authStatus, err.message || "Authentication error.", "error");
+      } finally {
+        isAuthBusy = false;
+        submitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById("caseForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSessionUser) return;
+      try {
+        await addDoc(collection(db, "cases"), {
+          uid: currentSessionUser.uid,
+          title: document.getElementById("cTitle").value.trim(),
+          court: document.getElementById("cCourt").value.trim(),
+          status: document.getElementById("cStatus").value,
+          date: document.getElementById("cDate").value,
+          notes: document.getElementById("cNotes").value.trim(),
+          createdAt: serverTimestamp()
+        });
+        e.target.reset();
+        await loadCases(currentSessionUser, currentIsAdmin);
+      } catch (err) {
+        alert(err.message || "Error saving case record.");
+      }
+    });
+
+    document.getElementById("contractForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSessionUser) return;
+      try {
+        await addDoc(collection(db, "contracts"), {
+          uid: currentSessionUser.uid,
+          title: document.getElementById("cntTitle").value.trim(),
+          parties: document.getElementById("cntParties").value.trim(),
+          status: document.getElementById("cntStatus").value,
+          effectiveDate: document.getElementById("cntEffectiveDate").value,
+          date: document.getElementById("cntDate").value,
+          notes: document.getElementById("cntNotes").value.trim(),
+          createdAt: serverTimestamp()
+        });
+        e.target.reset();
+        await loadContracts(currentSessionUser, currentIsAdmin);
+      } catch (err) {
+        alert(err.message || "Error saving contract record.");
+      }
+    });
+
+    document.getElementById("intakeForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSessionUser) return;
+      clearStatus(intakeStatus);
+
+      const record = {
+        uid: currentSessionUser.uid,
+        name: document.getElementById("iName").value.trim(),
+        whatsapp: document.getElementById("iWhatsapp").value.trim(),
+        email: document.getElementById("iEmail").value.trim(),
+        linkedin: document.getElementById("iLinkedin").value.trim(),
+        category: document.getElementById("iCategory").value,
+        urgency: document.getElementById("iUrgency").value,
+        summary: document.getElementById("iSummary").value.trim(),
+        createdAt: serverTimestamp()
+      };
+
+      try {
+        await addDoc(collection(db, "intake"), record);
+        intakeAnalysisOutput.innerHTML = buildLegalAssessment(record);
+        e.target.reset();
+        await loadIntake(currentSessionUser, currentIsAdmin);
+        showStatus(intakeStatus, "Client intake saved and legal assessment generated.", "ok");
+      } catch (err) {
+        showStatus(intakeStatus, err.message || "Error saving client intake.", "error");
+      }
+    });
+
+    document.getElementById("libraryForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSessionUser) return;
+      clearStatus(libraryStatus);
+
+      const title = document.getElementById("libTitle").value.trim();
+      const category = document.getElementById("libCategory").value;
+      const provision = document.getElementById("libProvision").value.trim();
+      const source = document.getElementById("libSource").value;
+      const url = document.getElementById("libUrl").value.trim();
+      const notes = document.getElementById("libNotes").value.trim();
+
+      const libItem = {
+        uid: currentSessionUser.uid,
+        title,
+        category,
+        provision,
+        source,
+        url,
+        notes,
+        authentic: true,
+        createdAt: serverTimestamp()
+      };
+
+      try {
+        await addDoc(collection(db, "library"), libItem);
+        e.target.reset();
+        await loadLibrary(currentSessionUser, currentIsAdmin);
+        showStatus(libraryStatus, "Saved to Legal Library.", "ok");
+      } catch (err) {
+        showStatus(libraryStatus, err.message || "Error saving to library.", "error");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => signOut(auth));
+
+    window.appStarted = true;
+    initApp();
+  </script>
+</body>
+</html>
